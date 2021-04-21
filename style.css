@@ -1,0 +1,64 @@
+body {
+  background: url(/assets/background.jpg);
+}
+
+#board {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.cell {
+  background: url(/assets/grass.jpeg);
+  width: 70px;
+  height: 70px;
+  border: 2px dashed rgb(75, 60, 18);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.player {
+  width: 90%;
+  height: 90%;
+  text-align: center;
+  background: url(/assets/sprite.png);
+  background-size: 85%;
+  background-repeat: no-repeat;
+}
+
+.targetCell {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url(/assets/coin.png) no-repeat center center/50%;
+  animation: coin 1s infinite;
+}
+
+@keyframes coin {
+  0% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
+.enemyCell {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: red;
+}
