@@ -1,5 +1,6 @@
 body {
   background: url(/assets/background.jpg);
+  color: #ddd;
 }
 
 #board {
@@ -8,6 +9,34 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-family: 'MedievalSharp', cursive;
+}
+
+h1, h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px black;
+  text-align: center;
+}
+
+h2 {
+  margin-top: 2%;
+}
+
+button {
+  padding: 3rem;
+  margin: 50px;
+  background-color: #19171A;
+  border: none;
+  color: #ddd;
+  font-family: 'MedievalSharp', cursive;
+  font-size: 3rem;
+  transition: .2s ease-in-out;
+}
+
+button:hover {
+  transform: scale(1.1) rotate(3deg);
+  box-shadow: 0 0 20px yellow;
 }
 
 .row {
@@ -41,6 +70,11 @@ body {
   width: 100%;
   height: 100%;
   background: url(/assets/coin.png) no-repeat center center/50%;
+  animation: coin 1s infinite;
+}
+
+.targetCell--zelda {
+  background: url(/assets/zelda.png) no-repeat center center/50%;
   animation: coin 1s infinite;
 }
 

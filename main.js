@@ -3,7 +3,7 @@ let App = {
     isGameOver: false,
     isLoose: false,
     currentLevel: 1,
-    nbOfLevels: 5,
+    nbOfLevels: 4,
     maxTries: 10,
     TriesNumber: 0,
     boardConfiguration: {
@@ -28,11 +28,13 @@ let App = {
             if (!App.isGameOver) {
                 this.whatDirection(this.direction, 'left');
             }
+            App.redrawBoard();
         },
         turnRight() {
             if (!App.isGameOver) {
                 this.whatDirection(this.direction, 'right');
             }
+            App.redrawBoard();
         },
         moveForward(currentDirection) {
             if (!App.isGameOver) {
@@ -156,6 +158,16 @@ let App = {
     },
     drawBoard() {
         if (!this.isGameOver) {
+            const TITLE = document.createElement('h1');
+            const CURRENT_LEVEL_INFORMATIONS = document.createElement('h2');
+            const TRIES_LEFT = document.createElement('h2');
+            TITLE.textContent = 'Tu dois sauver Zelda!';
+            CURRENT_LEVEL_INFORMATIONS.textContent = `Level : ${this.currentLevel}`;
+            TRIES_LEFT.textContent = `Il te reste ${this.maxTries} coups!`;
+            this.BOARD.appendChild(TITLE);
+            this.BOARD.appendChild(CURRENT_LEVEL_INFORMATIONS);
+
+
             const NUMBER_OF_ROW = this.boardConfiguration.numberOfRows;
             const NUMBER_OF_CELLS = this.boardConfiguration.numberOfCellsPerRow;
         
@@ -183,16 +195,22 @@ let App = {
                 currentY++;
             }
             this.player.updatePlayerDirection(this.player.direction); 
+            this.BOARD.appendChild(TRIES_LEFT);
         }else {
-            this.isGameOver = false;
-            console.log('Niveau Terminé! Création d\'une nouvelle map');
-            this.updateBoardConfiguration();
+            this.clearBoard();
+            if (this.currentLevel < this.nbOfLevels) {
+                this.showPreLevelMessage();
+            } else {
+                this.showFinalMessage();
+            }
         }
-    },
-    
+    },   
     addCharacterToCell(cell, character) {
         const DIV = document.createElement('div');
         DIV.className = character;
+        if (character === 'targetCell' && this.currentLevel === this.nbOfLevels) {
+            DIV.classList.add('targetCell--zelda');
+        }
         cell.appendChild(DIV);
     },
     clearBoard() {
@@ -207,6 +225,7 @@ let App = {
         if(this.currentLevel < this.nbOfLevels) {
             this.currentLevel++;
             console.log('Informations en cours de changement, passage au niveau', this.currentLevel);
+            this.updateTries(true);
             this.generateNewBoardConfiguration();
         } else {
             console.log(`Niveau MAX atteint ${this.currentLevel}`);
@@ -230,37 +249,72 @@ let App = {
     getRandomNumber(max) {
         return Math.floor(Math.random() * max);
     },
+    updateTries(reset = false) {
+        if (!reset) {
+            if (this.maxTries !== 0) {
+                this.maxTries--;
+                this.TriesNumber++;
+            } else {
+                this.isGameOver = true;
+                this.clearBoard();
+                this.showLooseMessage();
+            }
+        } else {
+            this.maxTries = Math.round((this.currentLevel / 1.5)) * 10;
+            this.TriesNumber = 0;
+            console.log('Nombres d\'essais remis à 0!');  
+        }
+    },
+    showPreLevelMessage() {
+        const NEXT_LEVEL = document.createElement('h1');
+        NEXT_LEVEL.innerHTML = `Félicitation!<br>tu as réussi le niveau ${this.currentLevel} en ${this.TriesNumber} coups!`;
+        this.BOARD.appendChild(NEXT_LEVEL);
+        const BUTTON = document.createElement('button');
+        BUTTON.innerHTML = `Passer au niveau ${this.currentLevel+1}`;
+        this.BOARD.appendChild(BUTTON);
+        BUTTON.addEventListener('click', () => {
+            console.log('Niveau Terminé! Création d\'une nouvelle map');
+            this.isGameOver = false;
+            this.clearBoard();
+            this.updateBoardConfiguration();
+        });
+    },
+    showFinalMessage() {
+        const FINAL_TEXT = document.createElement('h1');
+        FINAL_TEXT.innerHTML = 'Félicitation!<br>tu as sauvé Zelda!<br>Pense à la petite ⭐ sur Github';
+        this.BOARD.appendChild(FINAL_TEXT);
+    },
+    showLooseMessage() {
+        const LOOSE_TEXT = document.createElement('h1');
+        LOOSE_TEXT.innerHTML = 'Dommage!<br>tu n\'as pas réussi à sauver Zelda!<br>Pense à la petite ⭐ sur Github';
+        this.BOARD.appendChild(LOOSE_TEXT);
+    },
     init() {
         this.drawBoard();
 
-        document.addEventListener('keydown', (event) => {
-            const PRESSED_KEY = event.key;
-            switch (PRESSED_KEY) {
-            case 'ArrowUp' :
-                try {
+        if (!this.isGameOver) {
+            document.addEventListener('keydown', (event) => {
+                const PRESSED_KEY = event.key;
+                switch (PRESSED_KEY) {
+                case 'ArrowUp' :
                     this.player.moveForward(this.player.direction);
-                } catch (e) {
-                    console.log('AAAAA');
-                }
-                break;
-            case 'ArrowDown':
-                try {
+                    break;
+                case 'ArrowDown':
                     this.player.moveBackward(this.player.direction);
-                } catch (e) {
-                    console.log('AAAAA');
+                    break;
+                case 'ArrowLeft':
+                    this.player.turnLeft();
+                    break;
+                case 'ArrowRight':
+                    this.player.turnRight();
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case 'ArrowLeft':
-                this.player.turnLeft();
-                break;
-            case 'ArrowRight':
-                this.player.turnRight();
-                break;
-            default:
-                break;
-            }
-        });
-    }
+                this.updateTries();
+            });
+        }
+    },
 };
 
 window.onload = () => {
